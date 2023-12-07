@@ -1,0 +1,187 @@
+<%- include('../partials/header') %>
+
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Navbar -->
+<!-- Jumbotron -->
+<div class="bg-primary text-white py-5 jumbotron" style="background-image: url('users/img/wave2.png'); background-size: cover; background-position: center;">
+  <div class="container py-5">
+    <h1>
+      Best waves of  <br />
+      Best brands in our store
+    </h1>
+    <p>
+      Trendy Products, Factory Prices, Excellent Service
+    </p>
+    <a href="/about" class="btn btn-outline-light">
+      Learn more
+    </a>
+    
+    <a href="your_purchase_now_url" class="btn btn-light shadow-0 text-primary pt-2 border border-white">
+      <span class="pt-1">Purchase now</span>
+    </a>
+  </div>
+</div>
+<!-- Jumbotron -->
+</header>
+
+<!-- Products -->
+<section>
+  <div class="container my-5">
+    <header class="mb-4">
+      <h3>New products</h3>
+    </header>
+
+    <div class="row">
+      <% products.forEach(product => { %>
+        <div class="col-lg-3 col-md-6 col-sm-6 mb-4 product-link">
+          <div class="card h-100">
+            <div class="img-container">
+              <% product.primaryImage.forEach(img => { %>
+                <img class="main__img" src="/admin/uploads/<%= img.name %>" alt="" style="max-width: 100%; max-height: 100%; height: auto;" />
+              <% }); %>
+            </div>
+            <div class="card-body">
+              <h5 class="product-name"><%= product.title %></h5>
+              <p class="product-price">₹<%= product.productPrice %></p>
+            </div>
+            <div class="card-footer">
+             
+              <div class="d-flex justify-content-between align-items-center">
+                
+                <form id="addToCartForm" action="/shopCart" method="POST">
+                  <input type="" name="productId" value="<%= product._id %>">
+                  <input type="" name="quantity" value="1">
+                  <button type="submit" class="add-cart-btn">Add to Cart</button>
+              </form>
+                
+
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<!-- Products -->
+
+<!-- Feature -->
+<section class="mt-5" style="background-image: url('/users/img/wave5.png'); background-size: cover; background-position: center; background-color: #f5f5f5;">
+  <div class="container text-dark pt-3">
+    <header class="pt-4 pb-3">
+      <h3>Why choose us</h3>
+    </header>
+    <div class="row mb-4">
+      <div class="col-lg-4 col-md-6">
+        <figure class="d-flex align-items-center mb-4">
+          <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
+            <i class="fas fa-camera-retro fa-2x fa-fw text-primary floating"></i>
+          </span>
+          <figcaption class="info">
+            <h6 class="title">Reasonable prices</h6>
+            <p>Our products come at affordable prices, ensuring that you get great value for your money. We believe in providing quality without breaking the bank.</p>
+          </figcaption>
+        </figure>
+        <!-- itemside // -->
+      </div>
+      <!-- col // -->
+      <div class="col-lg-4 col-md-6">
+        <figure class="d-flex align-items-center mb-4">
+          <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
+            <i class="fas fa-star fa-2x fa-fw text-primary floating"></i>
+          </span>
+          <figcaption class="info">
+            <h6 class="title">Best quality</h6>
+            <p>Experience the best quality with our products. We are committed to delivering excellence in every item we offer, meeting and exceeding your expectations.</p>
+          </figcaption>
+        </figure>
+        <!-- itemside // -->
+      </div>
+      <!-- col // -->
+      <div class="col-lg-4 col-md-6">
+        <figure class="d-flex align-items-center mb-4">
+          <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
+            <i class="fas fa-plane fa-2x fa-fw text-primary floating"></i>
+          </span>
+          <figcaption class="info">
+            <h6 class="title">Worldwide shipping</h6>
+            <p>Enjoy the convenience of worldwide shipping. No matter where you are, we ensure that our products reach you with our efficient and reliable shipping services.</p>
+          </figcaption>
+        </figure>
+        <!-- itemside // -->
+      </div>
+      <!-- col // -->
+      <div class="col-lg-4 col-md-6">
+        <figure class="d-flex align-items-center mb-4">
+          <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
+            <i class="fas fa-users fa-2x fa-fw text-primary floating"></i>
+          </span>
+          <figcaption class="info">
+            <h6 class="title">Customer satisfaction</h6>
+            <p>Your satisfaction is our priority. We value our customers and strive to provide exceptional service, ensuring a positive and delightful experience with our products.</p>
+          </figcaption>
+        </figure>
+        <!-- itemside // -->
+      </div>
+      <!-- col // -->
+      <div class="col-lg-4 col-md-6">
+        <figure class="d-flex align-items-center mb-4">
+          <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
+            <i class="fas fa-thumbs-up fa-2x fa-fw text-primary floating"></i>
+          </span>
+          <figcaption class="info">
+            <h6 class="title">Happy customers</h6>
+            <p>Join our community of happy customers. We take pride in delivering products that bring smiles and satisfaction to our customers around the globe.</p>
+          </figcaption>
+        </figure>
+        <!-- itemside // -->
+      </div>
+      <!-- col // -->
+      <div class="col-lg-4 col-md-6">
+        <figure class="d-flex align-items-center mb-4">
+          <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
+            <i class="fas fa-box fa-2x fa-fw text-primary floating"></i>
+          </span>
+          <figcaption class="info">
+            <h6 class="title">Thousand items</h6>
+            <p>Explore our vast collection with thousands of items. From trendy styles to classic designs, we offer a diverse range to cater to all your needs and preferences.</p>
+          </figcaption>
+        </figure>
+        <!-- itemside // -->
+      </div>
+      <!-- col // -->
+    </div>
+  </div>
+
+    <!-- Feature content remains unchanged -->
+  </div>
+</section>
+<!-- Feature -->
+
+<script>
+function addToCart(productId, quantity, price) {
+  const userId = req.session.user._id;
+
+  fetch('/shopCart', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userId, productId, quantity, price }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Success:', data);
+    // Handle success as needed
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    // Handle error as needed
+  });
+}
+</script>
+
+<%- include('../partials/footer') %>

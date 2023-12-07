@@ -1,0 +1,47 @@
+<%- include('../partials/header') %>
+
+<style>
+
+@media (min-width: 1025px) {
+.h-custom {
+height: 100vh !important;
+}
+}
+</style>
+
+<body>
+  <h1>Your Shopping Cart</h1>
+
+  <% if (userCart && userCart.product.length > 0) { %>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% userCart.product.forEach(cartItem => { %>
+          <tr>
+            <td><%= cartItem.productId.title %></td>
+            <td><%= cartItem.productId.quantity %></td>
+            <td><%= cartItem.productId. productPrice %></td>
+            <td><%= (cartItem.productId.productPrice * cartItem.productId.quantity).toFixed(2) %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+
+    <p>Total Price: <%= totalPrice.toFixed(2) %></p>
+    <!-- Add a button or link to proceed to checkout or continue shopping -->
+
+  <% } else { %>
+    <p>No items in the cart</p>
+  <% } %>
+
+  <!-- Include your JavaScript files or inline scripts here if needed -->
+
+</body>
+<%- include('../partials/footer') %>

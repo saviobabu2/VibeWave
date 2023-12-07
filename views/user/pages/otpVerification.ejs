@@ -1,0 +1,64 @@
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="card mt-4">
+  <div class="card-body text-center">
+    <div class="heading_s1">
+      <h3 class="mb-30 mt-3">OTP Verification</h3>
+    </div>
+    <form action="/otp" method="post">
+      <div class="form-group">
+        <label for="otp">Enter OTP:</label>
+        <input type="number" class="form-control" id="otp" name="otp" placeholder="Enter OTP" required>
+      </div>
+      <button type="submit" class="btn btn-primary mt-2">Verify OTP</button>
+    </form>
+    <button type="submit" id="resendOTPButton" class="btn btn-warning mt-3 text-light">
+      <a class="text-light" href="/reSendOTP">Resend OTP</a>
+    </button>
+    <div id="timer" class="mt-3">Timer: 1:00</div>
+
+    <% if (error) { %>
+      <div class="alert alert-danger mt-3" role="alert">
+        <%= messages %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Set the time limit for the timer in seconds
+      const timeLimit = 60;
+  
+      let timer = timeLimit;
+      const timerElement = document.getElementById('timer');
+      const resendOTPButton = document.getElementById('resendOTPButton');
+  
+      function updateTimer() {
+        const minutes = Math.floor(timer / 60);
+        const seconds = timer % 60;
+        timerElement.textContent = `Timer: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  
+        if (timer === 0) {
+          // Disable the Resend OTP button when the timer reaches zero
+          resendOTPButton.setAttribute('disabled', 'disabled');
+        } else {
+          timer--;
+          setTimeout(updateTimer, 1000); // Update the timer every second
+        }
+      }
+  
+      // Initial call to start the timer
+      updateTimer();
+  
+      // You can also trigger the timer reset when the Resend OTP button is clicked
+      resendOTPButton.addEventListener('click', function () {
+        timer = timeLimit;
+        resendOTPButton.removeAttribute('disabled');
+        updateTimer();
+      });
+    });
+  </script>
+<%- include('../partials/footer') %>
