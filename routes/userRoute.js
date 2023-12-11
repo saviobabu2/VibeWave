@@ -27,18 +27,18 @@ user_route.use(session({
 
 
 
-user_route.get('/',userController.loadlandingpage);
-user_route.get('/login',userController.loadloginpage);
+user_route.get('/',userAuth.isLogout,userController.loadlandingpage);
+user_route.get('/login',userAuth.isLogout,userController.loadloginpage);
 user_route.post('/login',userController.login);
 
 
-user_route.get('/signup',userController.loadregistration);
+user_route.get('/signup',userAuth.isLogout,userController.loadregistration);
 user_route.post('/signup',userController. signUP);
 
 
 user_route.get('/logout',userController.logout);
 
-user_route.get('/profile',userController.loadprofile);
+user_route.get('/profile',userAuth.isLogin,userController.loadprofile);
 
 
 
@@ -55,34 +55,36 @@ user_route.get('/about',userController.loadaboutpage)
 
 user_route.get('/contact',userController.loadcontactpage);
 
-user_route.get('/home',userController.loadHomePage);
-
-user_route.get('/checkout',userController.loadcheckoutPage);
+user_route.get('/home',userAuth.isLogin,userController.loadHomePage);
 
 
-user_route.get('/product',userController.loadproductdetailspage);
 
-user_route.get('/productList',userController.productList);
+user_route.get('/product',userAuth.isLogin,userController.loadproductdetailspage);
+
+user_route.get('/productList',userAuth.isLogin,userController.productList);
 
 
-user_route.get('/editUser',userController.editUserDetailspage);
+user_route.get('/editUser',userAuth.isLogin,userController.editUserDetailspage);
 user_route.post('/editUser',userController.editUserDetails);
 
 
 //for cart
-user_route.get('/shopCart', userController.loadshopcartpage);
+user_route.get('/shopCart',userAuth.isLogin, userController.loadshopcartpage);
 user_route.post('/shopCart', userController.addToCart);
-
-
+user_route.get('/removeOneItem/:productId',userAuth.isLogin, userController.removeOneItem);
+user_route.put('/updateQuantity/:productId', userController.updateQuantity);
 
 
 
 
 // <!--AddressManagment-->
-user_route.get('/address',addressController.getAllAddress);
-user_route.get('/addAddress',  addressController.addAddressPage);
+user_route.get('/address',userAuth.isLogin,addressController.getAllAddress);
+user_route.get('/addAddress', userAuth.isLogin, addressController.addAddressPage);
 user_route.post('/addAddress',  addressController.newAddress)
 
+
+// // <!--for checkout-->
+// user_route.get('/checkout',userAuth.isLogin, userController.loadCheckoutPage);
 
 
 module.exports = user_route;

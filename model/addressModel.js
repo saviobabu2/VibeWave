@@ -1,7 +1,17 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-var addressSchema = new mongoose.Schema(
+
+var addressSchema = new Schema(
      {
+
+
+
+          user: {type:mongoose.Schema.Types.ObjectId, ref:'User', required:true },
+
+list :[{
+     
+
           user_name: {
                type: String,
                required: true,
@@ -27,10 +37,12 @@ var addressSchema = new mongoose.Schema(
           state: {
                type: String,
                required: true,
-          },
+          },}
           
+          ]
+       
           
-          
+
      },
      {
           timestamps: true,

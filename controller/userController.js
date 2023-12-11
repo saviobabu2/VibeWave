@@ -7,12 +7,12 @@ const { sendOtp } = require("../utility/nodeMailer");
 const { generateOTP } = require("../utility/nodeMailer");
 const productModel = require("../model/productModel");
 const Cart= require("../model/cartModel");
+const Address = require("../model/addressModel");
 
 
 
 const loadlandingpage = asyncHandler(async (req, res) => {
 
-  //console.log(req.session.user,'i am user');
 
 if(req.session.user){
   console.log('not destroyed');
@@ -381,15 +381,6 @@ const loadproductdetailspage=async(req,res)=>{
 
 
 
-//for checkoutpage
-
-const loadcheckoutPage=async(req,res)=>{
-  try {
-    res.render('./user/pages/checkout')
-  } catch (error) {
-    throw new Error(error);
-  }
-}
 
 
 
@@ -416,16 +407,16 @@ const productList=async(req,res)=>{
 
 
 
-const loadaddressPage=async(req,res)=>{
-  try {
-    const product = await addressModel.findOne({ userid :userId });
-    res.render('./user/pages/address',{address})
-  } catch (error) {
-    throw new Error(error);
-  }
-}
-
-
+// const loadaddressPage = async (req, res) => {
+//   try {
+//     const userId = req.session.user._id; // Use req.session.user._id to get the user's ID
+//     const address = await Address.findOne({ user_id: userId }); // Use userId to find the address
+//     res.render('./user/pages/address', { address });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Internal Server Error');
+//   }
+// }
 
 
 
@@ -442,31 +433,36 @@ const addToCart = async (req, res) => {
     }
 
     const userId = req.session.user._id;
-    const { productId, quantity } = req.body;
+    const { productId, quantity, price } = req.body;
 
     let userCart = await Cart.findOne({ user: userId });
 
     // If the user doesn't have a cart, create a new one
     if (!userCart) {
-      userCart = new Cart({ user: userId, product: [] });
-    }
-
-    // Check if the product is already in the cart
-    const existingProductIndex = userCart.product.findIndex(
-      (item) => item.productId.toString() === productId.toString()
-    );
-
-    if (existingProductIndex !== -1) {
-      // If the product is already in the cart, update the quantity
-      userCart.product[existingProductIndex].quantity += quantity;
+      userCart = await Cart.create({
+        user: userId,
+        product: [{ productId, quantity, price }],
+      });
     } else {
-      // If the product is not in the cart, add it
-      userCart.product.push({ productId, quantity });
+      // Check if the product is already in the cart
+      const existingProductIndex = userCart.product.findIndex(
+        (item) => item.productId.toString() === productId.toString()
+      );
+
+      if (existingProductIndex !== -1) {
+        // If the product is already in the cart, update the quantity
+        userCart.product[existingProductIndex].quantity += 1;
+        console.log('Quantity increased by one');
+      } else {
+        // If the product is not in the cart, add it
+        userCart.product.push({ productId, quantity: 1, price });
+      }
     }
 
     // Save the updated cart
     await userCart.save();
-    
+
+    // res.status(200).json({ status: 'success' });
 
   } catch (error) {
     console.error('Error adding to cart:', error);
@@ -475,6 +471,37 @@ const addToCart = async (req, res) => {
 };
 
 
+
+
+
+// for removing one item from cart
+const removeOneItem = asyncHandler(async (req, res) => {
+  const userId = req.session.user_id;
+  const { productId } = req.params;
+
+  // Update the user's cart
+  const cart = await Cart.findOne({ user: userId });
+
+  if (cart) {
+    // Find the specified product in the cart
+    const cartItem = cart.product.find((item) => item.productId.equals(productId));
+
+    if (cartItem) {
+      // If the product is in the cart, reduce the quantity by one
+      cartItem.quantity -= 1;
+
+      // If the quantity is zero, remove the product from the cart
+      if (cartItem.quantity === 0) {
+        cart.product = cart.product.filter((item) => !item.productId.equals(productId));
+      }
+
+      // Save the updated cart
+      await cart.save();
+    }
+  }
+
+  res.redirect('/shopCart'); // Redirect back to the cart page
+});
 
 
 
@@ -488,32 +515,29 @@ const addToCart = async (req, res) => {
 // for cart page
 const loadshopcartpage = async (req, res) => {
   try {
-    let message = ''; // Initialize the message variable
-
     if (!req.session.user) {
       return res.redirect('/login'); // Redirect to login if the user is not logged in
     }
 
     const userId = req.session.user._id;
-    const userCart = await Cart.findOne({ user: userId }).populate("product.productId");
+    const userCart = await Cart.findOne({ user: userId }).populate('product.productId');
+
+    if (!userCart || userCart.product.length === 0) {
+      // If the user cart is empty, redirect to the cart page with a message
+      return res.render('./user/pages/cartPage', { message: 'Your shopping cart is empty',userCart });
+    }
 
     let totalPrice = 0;
 
-    if (!userCart || userCart.product.length === 0) {
-      message = 'No items in the cart';
-    } else {
-      userCart.product.forEach((cartItem) => {
-        totalPrice += cartItem.productId.productPrice * cartItem.quantity;
-        console.log(cartItem.productId.productPrice);
-      });
-      res.render('./user/pages/cartPage', { userCart, totalPrice });
-    }
+    userCart.product.forEach((cartItem) => {
+      totalPrice += cartItem.productId.productPrice * cartItem.quantity;
+    });
 
-  
+    res.render('./user/pages/cartPage', { userCart, totalPrice });
 
   } catch (error) {
     console.error('Error loading cart page:', error);
-    res.status(500).send('Internal Server Error');
+   
   }
 };
 
@@ -521,6 +545,44 @@ const loadshopcartpage = async (req, res) => {
 
 
 
+
+
+
+// Modify the controller to handle the updateQuantity route
+const updateQuantity = asyncHandler(async (req, res) => {
+  const userId = req.session.user_id;
+  const { productId } = req.params;
+  const { action } = req.query;
+
+  // Update the user's cart
+  const cart = await Cart.findOne({ user: userId });
+
+  if (cart) {
+    // Find the specified product in the cart
+    const cartItem = cart.product.find((item) => item.productId.equals(productId));
+
+    if (cartItem) {
+      // Update the quantity based on the action
+      if (action === 'plus') {
+        cartItem.quantity += 1;
+      } else if (action === 'minus') {
+        // If the quantity is greater than 0, reduce it by one
+        if (cartItem.quantity > 0) {
+          cartItem.quantity -= 1;
+        }
+        // If the quantity is zero, remove the product from the cart
+        if (cartItem.quantity === 0) {
+          cart.product = cart.product.filter((item) => !item.productId.equals(productId));
+        }
+      }
+
+      // Save the updated cart
+      await cart.save();
+    }
+  }
+
+  res.json({ status: 'success' });
+});
 
 
 
@@ -595,6 +657,37 @@ const editUserDetails = async (req, res) => {
 
 
 
+
+
+
+
+// //for checkout page
+// const loadCheckoutPage=async(req,res)=>{
+//   try {
+
+//     const userId = req.session.user._id;
+//     const user = await User.findById(userId);
+//     const username = req.session.user_name;
+    
+//     const getCart = await Cart.find({ user_id: user }).populate("product.productId");
+//     console.log(getCart);
+//     const address = await Address.find({ user: username});
+//     console.log( address);
+//     // const total = getCart.reduce((acc, cart) => acc + cart.total, 0);
+//         console.log("..................",total);
+//     res.render("./user/pages/checkout",{getCart, user,address})// total was also there
+    
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// }
+
+
+
+
+
+
+
  module.exports = {
  loadloginpage,
  signUP,
@@ -612,15 +705,26 @@ const editUserDetails = async (req, res) => {
  verifyOTP,
  loadlandingpage,
  login,
- loadshopcartpage,
- loadcheckoutPage,
+
+
  productList,
 // verifyResendOTP,
  loadproductdetailspage,
+
+ 
+ loadshopcartpage,
  addToCart,
+ updateQuantity,
+
+
+
  editUserDetailspage,
  editUserDetails,
- loadaddressPage
+ removeOneItem,
+ 
+
+ //loadCheckoutPage
+ 
  };
 
 

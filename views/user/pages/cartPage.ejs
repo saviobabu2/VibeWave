@@ -1,12 +1,60 @@
 <%- include('../partials/header') %>
 
 <style>
+  @media (min-width: 1025px) {
+    .h-custom {
+      height: 100vh !important;
+    }
+  }
 
-@media (min-width: 1025px) {
-.h-custom {
-height: 100vh !important;
-}
-}
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  table {
+    width: 80%;
+    margin: auto;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    display: block;
+    margin: auto;
+  }
+
+  p {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .checkout-container {
+    width: 80%; /* Match the width of the table */
+    margin: auto;
+    text-align: right;
+    margin-top: 10px;
+  }
+
+  .checkout-button {
+    padding: 8px;
+    background-color: #4caf50;
+    color: white;
+    text-decoration: none;
+  }
 </style>
 
 <body>
@@ -16,32 +64,65 @@ height: 100vh !important;
     <table border="1">
       <thead>
         <tr>
+          <th></th>
           <th>Product</th>
           <th>Quantity</th>
           <th>Price</th>
           <th>Total</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
         <% userCart.product.forEach(cartItem => { %>
           <tr>
+            <td>
+              <div>
+                <img src="/admin/uploads/<%= cartItem.productId.primaryImage[0].name %>" alt="IMG">
+              </div>
+            </td>
             <td><%= cartItem.productId.title %></td>
-            <td><%= cartItem.productId.quantity %></td>
-            <td><%= cartItem.productId. productPrice %></td>
+            <td>
+              <div>
+                <button onclick="updateQuantity('<%= cartItem.productId._id %>', 'plus')">+</button>
+                <%= cartItem.productId.quantity %>
+                <button onclick="updateQuantity('<%= cartItem.productId._id %>', 'minus')">-</button>
+              </div>
+            </td>
+            <td><%= cartItem.productId.productPrice %></td>
             <td><%= (cartItem.productId.productPrice * cartItem.productId.quantity).toFixed(2) %></td>
+            <td>
+              <a href="/removeOneItem/<%= cartItem.productId._id %>">Remove</a>
+            </td>
           </tr>
         <% }); %>
       </tbody>
     </table>
 
-    <p>Total Price: <%= totalPrice.toFixed(2) %></p>
-    <!-- Add a button or link to proceed to checkout or continue shopping -->
+    <div class="checkout-container">
+      <p>Total Price: <%= totalPrice.toFixed(2) %></p>
+      <a href="/checkout" class="checkout-button">Proceed to Checkout</a>
+    </div>
 
   <% } else { %>
-    <p>No items in the cart</p>
+    <p><%= message %></p>
   <% } %>
-
   <!-- Include your JavaScript files or inline scripts here if needed -->
 
+
+  <script>
+    // JavaScript function to update quantity
+    function updateQuantity(productId, action) {
+      // Send an AJAX request to update the quantity on the server
+      fetch(`/updateQuantity/${productId}?action=${action}`, { method: 'PUT' })
+        .then(response => response.json())
+        .then(data => {
+          // Reload the page or update the quantity display as needed
+          location.reload();
+        })
+        .catch(error => console.error('Error updating quantity:', error));
+    }
+  </script>
+
 </body>
+
 <%- include('../partials/footer') %>

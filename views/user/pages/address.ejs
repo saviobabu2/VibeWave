@@ -67,33 +67,30 @@
             <div class="container">
                 <h1>User Addresses</h1>
               
-                <div class="row">
-                  <% if (address.length > 0) { %>
-                    <% address.forEach((element, index) => { %>
-                      <div class="col-md-4 mb-4">
+
+                  <div class="row">
+                    <% if (address) { %>
+                      <% address.forEach((element, index) => { %>
                         <div class="card">
-                          <div class="card-header">
-                            <h5 class="card-title">Address <%= index + 1 %></h5>
-                          </div>
+                          <!-- Your card header and body code here -->
                           <div class="card-body">
-                            <p class="card-text"><strong>User Name:</strong> <%= element.user_name %></p>
-                            <p class="card-text"><strong>Phone:</strong> <%= element.phone %></p>
-                            <p class="card-text"><strong>Pincode:</strong> <%= element.pincode %></p>
-                            <p class="card-text"><strong>Address:</strong> <%= element.address %></p>
-                            <p class="card-text"><strong>Town:</strong> <%= element.town %></p>
-                            <p class="card-text"><strong>State:</strong> <%= element.state %></p>
+                            <p class="card-text"><%= element.user_name %></p>
+                            <p class="card-text"><%= element.address %></p>
+                            <p class="card-text"><%= element.town %></p>
+                            <p class="card-text"><%= element.state %></p>
+                            <p class="card-text"><%= element.pincode %></p>
+                            <p class="card-text"><%= element.phone %></p>
                           </div>
                         </div>
+                      <% }) %>
+                    <% } else { %>
+                      <div class="col">
+                        <h3 class="text-center text-warning">
+                          You have no saved addresses! Please add an address.
+                        </h3>
                       </div>
-                    <% }) %>
-                  <% } else { %>
-                    <div class="col">
-                      <h3 class="text-center text-warning">
-                        You have no saved addresses! Please add an address.
-                      </h3>
-                    </div>
-                  <% } %>
-                </div>
+                    <% } %>
+                  </div>
               
               </div>
 
